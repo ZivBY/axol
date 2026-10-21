@@ -1,0 +1,82 @@
+---
+title: "Troubleshooting and support"
+description: "Check connection, operation-start, and update problems, then collect the details needed for help."
+---
+
+Start with the symptom you see. If the checks do not resolve it, use [Get help](#get-help) to share what happened and the relevant evidence.
+
+| Symptom | Start here |
+| --- | --- |
+| The panel cannot reach the robot computer | [Cannot connect to the host](#cannot-connect-to-the-host) |
+| The host is connected, but an operation will not start | [Start is disabled](#start-is-disabled) |
+| An update shows an error or a provisioning warning | [An update did not complete](#an-update-did-not-complete) |
+
+<Warning>
+  Closing the browser tab or disconnecting **Axol Host** does not stop an operation. Use the operation's **Stop** button to end a run. Do not restart or power off the host while an update is installing.
+</Warning>
+
+## Cannot connect to the host
+
+The **Axol Host** tile connects to the computer running `axol serve`. A host connection is separate from the robot's motor and camera readiness.
+
+1. Confirm that the browser computer can reach the robot computer on the same network. In **Axol Host → Connect**, enter the **robot computer's** IP address in **Axol Host Address**. The default HTTPS port is `8001`. If your installation uses another port, use that configured address; see [`serve`](/cli/serve).
+2. If the dialog says it cannot reach the host, check that the server is running. The [one-command installation](/installation) starts `axol.service` automatically. On that host, run `systemctl status axol --no-pager` and check the **Active:** line; if it is not active (running), record the state and any error for support. A [development installation](/advanced/development-install) needs `axol serve` running in a terminal. See [Start the server](/guides/control-panel#start-the-server) for the local and LAN URLs.
+3. If the server is running and this browser has not approved its self-signed certificate, use **Authorize certificate** in the connection dialog. Confirm that the popup points to your robot computer, then accept its local certificate warning. The panel retries the connection. This resolves certificate approval only; a wrong address or an unavailable server still needs to be corrected.
+
+**Connection confirmed:** the **Axol Host** tile shows a green dot, the host name, and the installed release version. If connection still fails, record the exact dialog message, your installation method, and whether you tried from the host itself or another computer. Report the release as **unknown** if you cannot read it.
+
+## Start is disabled
+
+Read the **Before you can start:** list under the operation. Work through the named requirements for the selected **Axol** or **Mantis** device.
+
+| What the panel asks for | Where to check |
+| --- | --- |
+| **Connect Axol** or **Connect Mantis** | Check the selected device and its connection tile. See [Axol and Mantis](/guides/control-panel#axol-and-mantis). |
+| **Fix motor fault: ...** | Record the named motor and error. Review the tile's motor status; ask Almond for help if the fault persists. |
+| Assign a camera and enable **Record** | Check the selected device's **Settings → Cameras**. See [Camera assignment](/guides/control-panel#cameras). |
+| Complete tracker setup | Use **Mantis settings → Tracking** and the [Mantis Tracking guide](/mantis/tracking). |
+| **Set ...** or **Pick ... from the list** | Complete the named operation field. If its list cannot load, include the displayed error in your report. |
+
+If the panel says **Not available on this server**, record the error shown below it and your installation method. The host could not load that operation, for example because a required dependency is missing. Include that error when contacting support.
+
+Otherwise, if the button is disabled without a requirements list, check whether an operation is already running or stopping, or the host is unavailable. The panel prevents conflicting operations.
+
+**Panel requirements cleared:** the blockers clear and **Start** becomes available when the host and operation are ready. This does not confirm that the physical workspace is ready or that the operation has run successfully. Do not bypass a blocker or change motor calibration just to clear an error.
+
+If you still need help, capture the operation name, selected device, exact blockers, and a screenshot with private details removed. You do not need to repeat a motion or fault to produce a report.
+
+## An update did not complete
+
+1. Record the installed and target versions shown in the update banner, along with its current phase or exact error. **Upgrading…**, **Installing deps…**, **Restarting…**, and **Rebooting host…** are progress states; temporary loss of connection during a restart is expected. See [Updates](/guides/control-panel#updates).
+2. Distinguish an error from a warning. A failed required step prevents the update from completing. An **optional provisioning** warning can appear after the host returns on the new release; include the named step and which feature you were trying to use. See [`provision`](/cli/provision).
+3. If the update ends with an error, collect that error and the relevant installation or provisioning log before retrying. If **Update** is still available, it can retry the failed update; do not interrupt an update still in progress. If the button is no longer available, the cause is unclear, or a retry fails, contact support with the evidence below.
+
+**Version change confirmed:** the host reconnects and reports the intended release. Check for a remaining required-provisioning error before treating the update as complete, and include any optional warning in your report.
+
+### Find the relevant logs
+
+- **Operation failure:** use **Download logs** in the panel's **Logs** header. It saves the currently displayed lines as a timestamped `.log` file; the button is disabled when there is no output. Download it while the relevant output is still visible.
+- **Initial installation failure:** save the original installer terminal output. The service or updater logs may not exist yet.
+- **Update or installed-service failure:** the operation console may not contain these logs. For a one-command installation, read the service logs on the robot computer with the command below. Adjust the time window to include the failure. The updater also saves step output in `/var/log/almond-axol/`, including `uv-tool-install.log` and `axol-provision.log`. If that directory cannot be used, the updater falls back to `~/.almond/logs` for the account running the server.
+- **Development server failure:** capture the relevant output from the terminal running `axol serve`.
+
+```bash
+journalctl -u axol --since "1 hour ago" --no-pager
+```
+
+To watch new service output instead, use `journalctl -u axol -f`; press **Ctrl+C** to stop following. This initially shows only a few recent entries, so use the time-window command above for an earlier failure. If access is denied or the journal is empty, include that in your support request.
+
+Review log excerpts and screenshots before sharing. Remove credentials, tokens, private network addresses, host names, hardware serials, and customer or dataset content. Keep the error text and surrounding context needed to understand the failure. Use your private support channel for sensitive diagnostics.
+
+## Get help
+
+For help with your robot, customer-specific setup, or hardware, use your existing Almond customer Slack channel or email [hello@almond.bot](mailto:hello@almond.bot). For a reproducible SDK or control-panel software problem, you can [open a GitHub bug report](https://github.com/almond-bot/axol/issues/new?template=bug_report.yml). GitHub issues are public.
+
+Include the following in either channel:
+
+- **Task and outcome:** what you were trying to do, what you expected, and what happened instead.
+- **Version and setup:** installed release or development commit, one-command or development installation, host model and OS, browser if relevant, and Axol, Mantis, or simulation.
+- **Steps already taken:** the shortest safe sequence that led to the problem, the checks above that you tried, and whether it previously worked. Describe any recent update or configuration change.
+- **Evidence:** the exact error or blocker, approximate time and timezone, and a reviewed log excerpt or screenshot. Say which details you could not obtain.
+
+Describe the observed problem even if you cannot reproduce it safely or determine its cause. These details help the person investigating choose the next check without asking you to repeat the initial setup history.

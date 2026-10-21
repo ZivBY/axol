@@ -1,0 +1,62 @@
+name: Software bug
+description: Report a bug in the Axol SDK, CLI, or web control panel.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Axol. Check the [documentation](https://docs.almond.bot), [web control panel guide](https://docs.almond.bot/guides/control-panel), and [existing issues](https://github.com/almond-bot/axol/issues) first.
+
+        **This report is public.** Remove secrets, tokens, IP addresses, serial numbers, customer data, and private paths from text, logs, and screenshots before posting. For hardware or customer-specific support, use your existing private Almond support channel or [hello@almond.bot](mailto:hello@almond.bot).
+
+        Describe what you already observed. Do not repeat unsafe hardware behavior or bypass a safety check to complete this form.
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Briefly describe the task, what you expected, and what actually happened.
+      placeholder: |
+        Task:
+        Expected:
+        Actual:
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps leading to the problem
+      description: Include the command or control-panel operation and how often this happened. Use steps already observed; if reproduction would be unsafe or is unknown, say so.
+      placeholder: |
+        1.
+        2.
+        Frequency:
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Release version or commit
+      description: Use the installed version shown on a connected Axol Host tile, or your development checkout commit. Write "unknown" if unavailable; you do not need to reconnect just to find it.
+      placeholder: Release version, commit, or unknown
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include what you know and mark the rest unknown or not applicable. For the control panel, note whether you use axol.almond.bot or a locally built UI and any version-mismatch warning.
+      placeholder: |
+        Install method (one-command install, development checkout, or other):
+        Host operating system:
+        Hardware model or simulation:
+        Browser and version (for web UI):
+        Hosted or local UI / version-mismatch warning:
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Error messages and relevant logs (optional)
+      description: Paste the exact error and a short, reviewed log excerpt, or attach a redacted screenshot. Include the time and time zone if useful. Share only what is relevant; do not attach full diagnostic bundles or unreviewed logs.
+      placeholder: Redacted error message and relevant context
+    validations:
+      required: false
